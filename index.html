@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내일 아침 메뉴 선정 🍳</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #FF7E36;
+            --primary-hover: #E0631F;
+            --primary-light: #FFF0E6;
+            --bg-grad-1: #FFF8F0;
+            --bg-grad-2: #FFF3E0;
+            --card-bg: #FFFFFF;
+            --text-main: #2D3748;
+            --text-sub: #718096;
+            --border-color: #EDF2F7;
+            --accent-yellow: #FFB800;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 16px;
+            color: var(--text-main);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(255, 126, 54, 0.08), 0 10px 20px rgba(0, 0, 0, 0.04);
+            padding: 32px 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Screen States */
+        .screen {
+            display: none;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .screen.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Welcome Screen */
+        .hero-img-wrapper {
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .hero-emoji {
+            font-size: 80px;
+            display: inline-block;
+            animation: bounce 2.5s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(4deg); }
+        }
+
+        .app-title {
+            font-size: 26px;
+            font-weight: 800;
+            text-align: center;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            line-height: 1.35;
+        }
+
+        .app-title span {
+            color: var(--primary);
+        }
+
+        .app-subtitle {
+            font-size: 15px;
+            color: var(--text-sub);
+            text-align: center;
+            margin-bottom: 36px;
+            line-height: 1.5;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #FF8E4D 0%, var(--primary) 100%);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(255, 126, 54, 0.35);
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(255, 126, 54, 0.45);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Time Selection Screen */
+        .step-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .step-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 13px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+
+        .step-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .step-desc {
+            font-size: 14px;
+            color: var(--text-sub);
+        }
+
+        /* Time Picker Scroller Container */
+        .picker-container {
+            position: relative;
+            height: 200px;
+            margin: 20px 0 32px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
+        }
+
+        .picker-wheel {
+            height: 100%;
+            width: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding: 80px 0;
+        }
+
+        .picker-wheel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .picker-item {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 600;
+            color: #CBD5E0;
+            scroll-snap-align: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .picker-item.selected {
+            color: var(--primary);
+            font-size: 24px;
+            font-weight: 800;
+            transform: scale(1.1);
+        }
+
+        .picker-highlight {
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            width: 90%;
+            height: 48px;
+            transform: translateY(-50%);
+            background: rgba(255, 126, 54, 0.08);
+            border-top: 2px solid var(--primary);
+            border-bottom: 2px solid var(--primary);
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        .selected-time-display {
+            background-color: var(--bg-grad-1);
+            border: 1px dashed var(--primary);
+            border-radius: 14px;
+            padding: 14px;
+            text-align: center;
+            font-size: 15px;
+            color: var(--text-main);
+            margin-bottom: 24px;
+        }
+
+        .selected-time-display strong {
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .satiety-info {
+            display: inline-block;
+            margin-top: 4px;
+            font-size: 13px;
+            color: #E53E3E;
+            font-weight: 600;
+        }
+
+        /* Result Screen */
+        .result-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .result-card {
+            background: #FFF;
+            border: 2px solid #FFF1E6;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(255, 126, 54, 0.06);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .meal-tag {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: #FFF5F0;
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        .meal-icon {
+            font-size: 54px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .meal-title {
+            font-size: 22px;
+            font-weight: 800;
+            text-align: center;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .meal-desc {
+            font-size: 14px;
+            color: var(--text-sub);
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .nutrition-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            background: #FAF5F0;
+            padding: 12px;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .nutrition-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .nutrition-label {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        .nutrition-val {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .reason-box {
+            background: #F7FAFC;
+            border-left: 4px solid var(--primary);
+            padding: 14px;
+            border-radius: 0 12px 12px 0;
+            font-size: 13px;
+            color: #4A5568;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 16px;
+            background: #EDF2F7;
+            color: var(--text-main);
+            border: none;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-secondary:hover {
+            background: #E2E8F0;
+        }
+
+        /* Loading Screen */
+        .loading-box {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--primary-light);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Screen 1: Welcome -->
+        <div id="screen-welcome" class="screen active">
+            <div class="hero-img-wrapper">
+                <span class="hero-emoji">🍳</span>
+            </div>
+            <h1 class="app-title">내일 아침 뭐 먹지?<br><span>점심까지 든든하게!</span></h1>
+            <p class="app-subtitle">점심시간에 맞춰 배고프지 않게 유지해 줄<br>맞춤형 아침 식단을 추천해 드릴게요.</p>
+            <button class="btn-primary" onclick="goToScreen('screen-time')">
+                <i class="fa-solid fa-utensils"></i> 아침 메뉴 선정 시작하기
+            </button>
+        </div>
+
+        <!-- Screen 2: Time Selection Wheel -->
+        <div id="screen-time" class="screen">
+            <div class="step-header">
+                <span class="step-badge">STEP 1</span>
+                <h2 class="step-title">내일 점심은 언제 드시나요?</h2>
+                <p class="step-desc">스크롤을 올려 예상 점심시간을 선택해 주세요.</p>
+            </div>
+
+            <div class="picker-container">
+                <div class="picker-highlight"></div>
+                <div class="picker-wheel" id="timeWheel">
+                    <!-- Times injected by JavaScript -->
+                </div>
+            </div>
+
+            <div class="selected-time-display">
+                예상 점심시간: <strong id="selectedTimeText">오후 12:00</strong><br>
+                <span class="satiety-info" id="satietyInfo">아침 후 점심까지 약 4~5시간 든든하게 유지 필요</span>
+            </div>
+
+            <button class="btn-primary" onclick="calculateAndShowResult()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> 맞춤 아침 메뉴 보기
+            </button>
+        </div>
+
+        <!-- Screen 3: Loading -->
+        <div id="screen-loading" class="screen">
+            <div class="loading-box">
+                <div class="spinner"></div>
+                <p class="loading-text" id="loadingText">영양 요소와 포만감 지속 시간을<br>계산하고 있습니다...</p>
+            </div>
+        </div>
+
+        <!-- Screen 4: Result -->
+        <div id="screen-result" class="screen">
+            <div class="result-header">
+                <span class="step-badge" id="resultBadge">맞춤 포만감 메뉴</span>
+                <h2 class="step-title" style="font-size: 20px;">내일 추천 아침 식단</h2>
+            </div>
+
+            <div class="result-card">
+                <span class="meal-tag" id="mealTag">고단백 / 식이섬유</span>
+                <div class="meal-icon" id="mealIcon">🥑</div>
+                <h3 class="meal-title" id="mealTitle">아보카도 에그 토스트</h3>
+                <p class="meal-desc" id="mealDesc">통밀빵 위에 으깬 아보카도와 계란 후라이를 얹어 고소하고 포만감이 오래 지속되는 메뉴입니다.</p>
+                
+                <div class="nutrition-list">
+                    <div class="nutrition-item">
+                        <span class="nutrition-label">포만감</span>
+                        <span class="nutrition-val" id="nutSatiety">★★★★★</span>
+                    </div>
+                    <div class="nutrition-item">
+                        <span class="nutrition-label">조리 시간</span>
+                        <span class="nutrition-val" id="nutTime">10분</span>
+                    </div>
+                    <div class="nutrition-item">
+                        <span class="nutrition-label">난이도</span>
+                        <span class="nutrition-val" id="nutDiff">쉬움</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reason-box" id="reasonBox">
+                💡 💡 <strong>선정 이유:</strong> 점심까지 약 5시간이 남아 포만감을 오래 유지할 수 있는 단백질과 건강한 지방 조합으로 추천해 드려요.
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="goToScreen('screen-time')">
+                    <i class="fa-solid fa-rotate-right"></i> 시간 다시 선택
+                </button>
+                <button class="btn-primary" style="flex: 1.2;" onclick="reRollMeal()">
+                    <i class="fa-solid fa-shuffle"></i> 다른 메뉴 보기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Database of breakfast meals grouped by needed satiety duration
+        const mealsData = {
+            early: [ // Lunch early (11:00 ~ 11:30) - Light breakfasts
+                {
+                    title: "그릭 요거트 & 그래놀라 베리",
+                    icon: "🥣",
+                    tag: "가벼운 출발",
+                    desc: "꾸덕한 그릭 요거트에 바삭한 그래놀라와 블루베리를 더해 가볍고 빠르게 즐길 수 있는 식단입니다.",
+                    satiety: "★★★☆☆",
+                    time: "3분",
+                    diff: "매우 쉬움",
+                    reason: "이른 점심 식사가 예정되어 있어 가볍게 에너지를 채우고 부드럽게 소화될 수 있는 메뉴로 추천합니다."
+                },
+                {
+                    title: "사과 & 아몬드 버터 토스트",
+                    icon: "🍎",
+                    tag: "비타민 충전",
+                    desc: "바삭하게 구운 식빵 위에 아몬드 버터를 바르고 슬라이스한 사과를 얹어 상큼하게 즐기는 메뉴입니다.",
+                    satiety: "★★★☆☆",
+                    time: "5분",
+                    diff: "쉬움",
+                    reason: "점심시간이 빨라 소화 부담을 줄이면서도 사과의 식이섬유로 적당한 활력을 주는 메뉴입니다."
+                }
+            ],
+            standard: [ // Lunch standard (11:45 ~ 12:30) - Balanced breakfasts
+                {
+                    title: "아보카도 에그 토스트",
+                    icon: "🥑",
+                    tag: "고단백 & 지방",
+                    desc: "통밀빵 위에 으깬 아보카도와 달걀 후라이를 올려 든든함과 영양을 모두 잡은 완벽한 아침 메뉴입니다.",
+                    satiety: "★★★★☆",
+                    time: "8분",
+                    diff: "쉬움",
+                    reason: "표준 점심시간까지 약 4시간 동안 안정적인 혈당과 포만감을 유지해 줄 수 있는 균형 잡힌 식단입니다."
+                },
+                {
+                    title: "바나나 블루베리 오트밀",
+                    icon: "🥣",
+                    tag: "복합 탄수화물",
+                    desc: "따뜻한 우유나 두유에 오트밀을 끓이고, 바나나와 견과류를 올려 든든하게 먹는 건강식입니다.",
+                    satiety: "★★★★☆",
+                    time: "7분",
+                    diff: "쉬움",
+                    reason: "오트밀의 식이섬유가 천천히 소화되어 점심때까지 편안한 든든함을 제공해 드립니다."
+                }
+            ],
+            late: [ // Lunch late (12:45 ~ 13:30) - High satiety breakfasts
+                {
+                    title: "훈제연어 스크램블 에그 랩",
+                    icon: "🌯",
+                    tag: "고단백 든든식",
+                    desc: "통밀 또띠아에 포슬포슬한 스크램블 에그와 훈제연어, 야채를 넣어 감싸 먹는 고단백 롤입니다.",
+                    satiety: "★★★★★",
+                    time: "10분",
+                    diff: "보통",
+                    reason: "점심시간이 늦어 5시간 이상 배고픔을 견뎌야 하므로 단백질과 지방이 풍부한 메뉴를 추천합니다."
+                },
+                {
+                    title: "닭가슴살 고구마 샐러드 볼",
+                    icon: "🥗",
+                    tag: "고단백 & 식이섬유",
+                    desc: "촉촉한 닭가슴살과 찐 고구마, 삶은 계란, 견과류를 푸짐하게 담아낸 영양 가득 샐러드입니다.",
+                    satiety: "★★★★★",
+                    time: "10분",
+                    diff: "쉬움",
+                    reason: "고구마의 복합 탄수화물과 닭가슴살의 단백질이 오랫동안 허기짐 없이 유지해 줍니다."
+                }
+            ],
+            veryLate: [ // Lunch very late (13:45 ~ 15:00) - Ultimate long satiety
+                {
+                    title: "치즈 베이컨 오믈렛 & 통밀빵",
+                    icon: "🍳",
+                    tag: "울트라 포만감",
+                    desc: "계란 3개에 치즈, 베이컨, 버섯을 가득 넣은 촉촉한 오믈렛과 노릇하게 구운 통밀빵 세트입니다.",
+                    satiety: "★★★★★",
+                    time: "12분",
+                    diff: "보통",
+                    reason: "점심 식사가 매우 늦습니다! 6시간 이상 강력한 포만감을 지속시켜 주는 고단백 고영양 아침입니다."
+                },
+                {
+                    title: "소고기 야채 죽 & 계란말이",
+                    icon: "🍲",
+                    tag: "속편한 든든함",
+                    desc: "부드럽고 소화가 잘 되는 소고기 야채죽에 고소한 계란말이를 더해 속은 편안하면서도 오래 든든합니다.",
+                    satiety: "★★★★★",
+                    time: "10분",
+                    diff: "쉬움",
+                    reason: "늦은 점심까지 속 쓰림 없이 오랫동안 에너지 레벨을 높게 유지할 수 있도록 돕습니다."
+                }
+            ]
+        };
+
+        // Generating Scroller Times (11:00 ~ 15:00, 15 min steps)
+        const times = [];
+        let currentHour = 11;
+        let currentMin = 0;
+
+        while (currentHour < 15 || (currentHour === 15 && currentMin === 0)) {
+            const period = currentHour >= 12 ? "오후" : "오전";
+            const displayHour = currentHour > 12 ? currentHour - 12 : currentHour;
+            const minStr = currentMin === 0 ? "00" : currentMin;
+            const timeVal = `${currentHour}:${minStr}`;
+            const timeText = `${period} ${displayHour}:${minStr}`;
+            times.push({ val: timeVal, text: timeText, hour: currentHour, min: currentMin });
+
+            currentMin += 15;
+            if (currentMin >= 60) {
+                currentMin = 0;
+                currentHour++;
+            }
+        }
+
+        let selectedIndex = 4; // Default: 12:00 PM
+        let currentMealCategory = "standard";
+        let lastRandomIndex = -1;
+
+        // Init Scroller
+        document.addEventListener("DOMContentLoaded", () => {
+            const wheel = document.getElementById("timeWheel");
+            
+            times.forEach((t, idx) => {
+                const item = document.createElement("div");
+                item.className = `picker-item ${idx === selectedIndex ? 'selected' : ''}`;
+                item.innerText = t.text;
+                item.addEventListener("click", () => scrollToItem(idx));
+                wheel.appendChild(item);
+            });
+
+            // Handle Scroll End Detection
+            let scrollTimeout;
+            wheel.addEventListener("scroll", () => {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    const itemHeight = 40;
+                    const scrollTop = wheel.scrollTop;
+                    const calculatedIdx = Math.round(scrollTop / itemHeight);
+                    if (calculatedIdx !== selectedIndex && calculatedIdx >= 0 && calculatedIdx < times.length) {
+                        updateSelection(calculatedIdx);
+                    }
+                }, 100);
+            });
+
+            // Initial alignment
+            setTimeout(() => {
+                wheel.scrollTop = selectedIndex * 40;
+                updateSelection(selectedIndex);
+            }, 100);
+        });
+
+        function scrollToItem(idx) {
+            const wheel = document.getElementById("timeWheel");
+            wheel.scrollTo({
+                top: idx * 40,
+                behavior: 'smooth'
+            });
+            updateSelection(idx);
+        }
+
+        function updateSelection(idx) {
+            selectedIndex = idx;
+            const items = document.querySelectorAll(".picker-item");
+            items.forEach((item, i) => {
+                if (i === idx) {
+                    item.classList.add("selected");
+                } else {
+                    item.classList.remove("selected");
+                }
+            });
+
+            const selectedTime = times[idx];
+            document.getElementById("selectedTimeText").innerText = selectedTime.text;
+
+            // Satiety Description update based on time
+            const satietyEl = document.getElementById("satietyInfo");
+            const h = selectedTime.hour;
+            const m = selectedTime.min;
+
+            if (h === 11) {
+                satietyEl.innerText = "아침 후 점심까지 약 3시간 (가볍고 알찬 식단)";
+                currentMealCategory = "early";
+            } else if (h === 12 && m <= 30) {
+                satietyEl.innerText = "아침 후 점심까지 약 4~5시간 (탄탄한 포만감 필요)";
+                currentMealCategory = "standard";
+            } else if (h === 12 && m > 30 || h === 13 && m <= 30) {
+                satietyEl.innerText = "아침 후 점심까지 약 5~6시간 (높은 포만감 필수)";
+                currentMealCategory = "late";
+            } else {
+                satietyEl.innerText = "아침 후 점심까지 6시간 이상 (최상급 포만감 필요!)";
+                currentMealCategory = "veryLate";
+            }
+        }
+
+        function goToScreen(screenId) {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function calculateAndShowResult() {
+            goToScreen('screen-loading');
+            
+            const loadingTexts = [
+                "내일 점심시간 계산 중...",
+                "필요한 포만감 지수 분석 중...",
+                "최적의 영양 밸런스 메뉴 찾는 중..."
+            ];
+            
+            let textIdx = 0;
+            const interval = setInterval(() => {
+                textIdx = (textIdx + 1) % loadingTexts.length;
+                document.getElementById('loadingText').innerText = loadingTexts[textIdx];
+            }, 500);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                renderMealResult();
+                goToScreen('screen-result');
+            }, 1500);
+        }
+
+        function renderMealResult() {
+            const categoryMeals = mealsData[currentMealCategory];
+            let randomIndex = Math.floor(Math.random() * categoryMeals.length);
+            
+            // Ensure different menu on retry if possible
+            if (randomIndex === lastRandomIndex && categoryMeals.length > 1) {
+                randomIndex = (randomIndex + 1) % categoryMeals.length;
+            }
+            lastRandomIndex = randomIndex;
+
+            const meal = categoryMeals[randomIndex];
+
+            document.getElementById('mealIcon').innerText = meal.icon;
+            document.getElementById('mealTitle').innerText = meal.title;
+            document.getElementById('mealTag').innerText = meal.tag;
+            document.getElementById('mealDesc').innerText = meal.desc;
+            document.getElementById('nutSatiety').innerText = meal.satiety;
+            document.getElementById('nutTime').innerText = meal.time;
+            document.getElementById('nutDiff').innerText = meal.diff;
+            document.getElementById('reasonBox').innerHTML = `💡 <strong>선정 이유:</strong> ${meal.reason}`;
+            
+            const timeText = times[selectedIndex].text;
+            document.getElementById('resultBadge').innerText = `예상 점심 [${timeText}] 맞춤 식단`;
+        }
+
+        function reRollMeal() {
+            const card = document.querySelector('.result-card');
+            card.style.opacity = '0.5';
+            card.style.transform = 'scale(0.98)';
+            
+            setTimeout(() => {
+                renderMealResult();
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+            }, 200);
+        }
+    </script>
+</body>
+</html>
