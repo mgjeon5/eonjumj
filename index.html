@@ -3,738 +3,752 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>내일 아침 메뉴 선정 🍳</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>오늘밤 새? - 수행평가 관리 앱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        :root {
-            --primary: #FF7E36;
-            --primary-hover: #E0631F;
-            --primary-light: #FFF0E6;
-            --bg-grad-1: #FFF8F0;
-            --bg-grad-2: #FFF3E0;
-            --card-bg: #FFFFFF;
-            --text-main: #2D3748;
-            --text-sub: #718096;
-            --border-color: #EDF2F7;
-            --accent-yellow: #FFB800;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
         body {
-            background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px 16px;
-            color: var(--text-main);
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
         }
-
-        .container {
-            width: 100%;
-            max-width: 480px;
-            background: var(--card-bg);
-            border-radius: 28px;
-            box-shadow: 0 20px 40px rgba(255, 126, 54, 0.08), 0 10px 20px rgba(0, 0, 0, 0.04);
-            padding: 32px 24px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
         }
-
-        /* Screen States */
-        .screen {
-            display: none;
-            opacity: 0;
-            transform: translateY(15px);
-            transition: opacity 0.4s ease, transform 0.4s ease;
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
         }
-
-        .screen.active {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
         }
-
-        /* Welcome Screen */
-        .hero-img-wrapper {
-            text-align: center;
-            margin-bottom: 24px;
-            position: relative;
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
-
-        .hero-emoji {
-            font-size: 80px;
-            display: inline-block;
-            animation: bounce 2.5s infinite ease-in-out;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-12px) rotate(4deg); }
-        }
-
-        .app-title {
-            font-size: 26px;
-            font-weight: 800;
-            text-align: center;
-            color: var(--text-main);
-            margin-bottom: 10px;
-            line-height: 1.35;
-        }
-
-        .app-title span {
-            color: var(--primary);
-        }
-
-        .app-subtitle {
-            font-size: 15px;
-            color: var(--text-sub);
-            text-align: center;
-            margin-bottom: 36px;
-            line-height: 1.5;
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #FF8E4D 0%, var(--primary) 100%);
-            color: white;
-            border: none;
-            border-radius: 18px;
-            font-size: 17px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(255, 126, 54, 0.35);
-            transition: all 0.2s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 24px rgba(255, 126, 54, 0.45);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        /* Time Selection Screen */
-        .step-header {
-            text-align: center;
-            margin-bottom: 28px;
-        }
-
-        .step-badge {
-            display: inline-block;
-            padding: 6px 14px;
-            background: var(--primary-light);
-            color: var(--primary);
-            font-weight: 700;
-            font-size: 13px;
-            border-radius: 20px;
-            margin-bottom: 12px;
-        }
-
-        .step-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 6px;
-        }
-
-        .step-desc {
-            font-size: 14px;
-            color: var(--text-sub);
-        }
-
-        /* Time Picker Scroller Container */
-        .picker-container {
-            position: relative;
-            height: 200px;
-            margin: 20px 0 32px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
-            -webkit-mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
-        }
-
-        .picker-wheel {
-            height: 100%;
-            width: 100%;
-            overflow-y: scroll;
-            scroll-snap-type: y mandatory;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            padding: 80px 0;
-        }
-
-        .picker-wheel::-webkit-scrollbar {
-            display: none;
-        }
-
-        .picker-item {
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: 600;
-            color: #CBD5E0;
-            scroll-snap-align: center;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .picker-item.selected {
-            color: var(--primary);
-            font-size: 24px;
-            font-weight: 800;
-            transform: scale(1.1);
-        }
-
-        .picker-highlight {
-            position: absolute;
-            top: 50%;
-            left: 5%;
-            width: 90%;
-            height: 48px;
-            transform: translateY(-50%);
-            background: rgba(255, 126, 54, 0.08);
-            border-top: 2px solid var(--primary);
-            border-bottom: 2px solid var(--primary);
-            border-radius: 12px;
-            pointer-events: none;
-        }
-
-        .selected-time-display {
-            background-color: var(--bg-grad-1);
-            border: 1px dashed var(--primary);
-            border-radius: 14px;
-            padding: 14px;
-            text-align: center;
-            font-size: 15px;
-            color: var(--text-main);
-            margin-bottom: 24px;
-        }
-
-        .selected-time-display strong {
-            color: var(--primary);
-            font-size: 18px;
-        }
-
-        .satiety-info {
-            display: inline-block;
-            margin-top: 4px;
-            font-size: 13px;
-            color: #E53E3E;
-            font-weight: 600;
-        }
-
-        /* Result Screen */
-        .result-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .result-card {
-            background: #FFF;
-            border: 2px solid #FFF1E6;
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 10px 25px rgba(255, 126, 54, 0.06);
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .meal-tag {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: #FFF5F0;
-            color: var(--primary);
-            font-size: 12px;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 12px;
-        }
-
-        .meal-icon {
-            font-size: 54px;
-            text-align: center;
-            margin-bottom: 12px;
-        }
-
-        .meal-title {
-            font-size: 22px;
-            font-weight: 800;
-            text-align: center;
-            color: var(--text-main);
-            margin-bottom: 8px;
-        }
-
-        .meal-desc {
-            font-size: 14px;
-            color: var(--text-sub);
-            text-align: center;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-
-        .nutrition-list {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            background: #FAF5F0;
-            padding: 12px;
-            border-radius: 14px;
-            text-align: center;
-        }
-
-        .nutrition-item {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .nutrition-label {
-            font-size: 11px;
-            color: var(--text-sub);
-        }
-
-        .nutrition-val {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .reason-box {
-            background: #F7FAFC;
-            border-left: 4px solid var(--primary);
-            padding: 14px;
-            border-radius: 0 12px 12px 0;
-            font-size: 13px;
-            color: #4A5568;
-            line-height: 1.5;
-            margin-bottom: 24px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-secondary {
-            flex: 1;
-            padding: 16px;
-            background: #EDF2F7;
-            color: var(--text-main);
-            border: none;
-            border-radius: 16px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-secondary:hover {
-            background: #E2E8F0;
-        }
-
-        /* Loading Screen */
-        .loading-box {
-            text-align: center;
-            padding: 40px 0;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid var(--primary-light);
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-main);
+        .animate-fade-in {
+            animation: fadeIn 0.2s ease-out forwards;
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col justify-between custom-scrollbar selection:bg-indigo-500 selection:text-white">
 
-    <div class="container">
-        <!-- Screen 1: Welcome -->
-        <div id="screen-welcome" class="screen active">
-            <div class="hero-img-wrapper">
-                <span class="hero-emoji">🍳</span>
+    <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="app.setFilter('pending')">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-700 to-blue-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+                    <i class="fa-solid fa-moon text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-extrabold tracking-tight text-slate-900 flex items-center gap-1.5">
+                        오늘밤 새?
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">v1.4</span>
+                    </h1>
+                    <p class="text-xs text-slate-500 font-medium">수행평가 벼락치기 방지 프로젝트</p>
+                </div>
             </div>
-            <h1 class="app-title">내일 아침 뭐 먹지?<br><span>점심까지 든든하게!</span></h1>
-            <p class="app-subtitle">점심시간에 맞춰 배고프지 않게 유지해 줄<br>맞춤형 아침 식단을 추천해 드릴게요.</p>
-            <button class="btn-primary" onclick="goToScreen('screen-time')">
-                <i class="fa-solid fa-utensils"></i> 아침 메뉴 선정 시작하기
+            <button onclick="app.openModal()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-xl shadow-md shadow-indigo-600/20 transition-all transform active:scale-95 text-xs">
+                <i class="fa-solid fa-plus"></i>
+                <span>+ 수행 일정 추가</span>
             </button>
         </div>
+    </header>
 
-        <!-- Screen 2: Time Selection Wheel -->
-        <div id="screen-time" class="screen">
-            <div class="step-header">
-                <span class="step-badge">STEP 1</span>
-                <h2 class="step-title">내일 점심은 언제 드시나요?</h2>
-                <p class="step-desc">스크롤을 올려 예상 점심시간을 선택해 주세요.</p>
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-6 flex-grow w-full">
+        
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div class="bg-gradient-to-br from-slate-900 via-indigo-950 to-indigo-900 text-white rounded-2xl p-5 shadow-lg relative overflow-hidden flex flex-col justify-between border border-slate-800">
+                <div class="absolute -right-3 -bottom-3 opacity-10 text-8xl font-black">
+                    <i class="fa-solid fa-fire"></i>
+                </div>
+                <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-300 mb-1">가장 가까운 수행평가</div>
+                <div class="text-3xl font-extrabold my-1" id="urgentDDay">D-Day</div>
+                <p class="text-xs text-indigo-200 font-medium truncate" id="urgentTitle">남은 수행평가가 없습니다</p>
             </div>
 
-            <div class="picker-container">
-                <div class="picker-highlight"></div>
-                <div class="picker-wheel" id="timeWheel">
-                    <!-- Times injected by JavaScript -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">진행 중인 수행</span>
+                    <span class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs" id="activeCount">0</span>
+                </div>
+                <div class="mt-3">
+                    <div class="text-2xl font-bold text-slate-800" id="totalTasksText">0개 항목</div>
+                    <p class="text-[11px] text-slate-500 mt-0.5">완료 시 기본 목록에서 자동 숨김</p>
                 </div>
             </div>
 
-            <div class="selected-time-display">
-                예상 점심시간: <strong id="selectedTimeText">오후 12:00</strong><br>
-                <span class="satiety-info" id="satietyInfo">아침 후 점심까지 약 4~5시간 든든하게 유지 필요</span>
-            </div>
-
-            <button class="btn-primary" onclick="calculateAndShowResult()">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> 맞춤 아침 메뉴 보기
-            </button>
-        </div>
-
-        <!-- Screen 3: Loading -->
-        <div id="screen-loading" class="screen">
-            <div class="loading-box">
-                <div class="spinner"></div>
-                <p class="loading-text" id="loadingText">영양 요소와 포만감 지속 시간을<br>계산하고 있습니다...</p>
-            </div>
-        </div>
-
-        <!-- Screen 4: Result -->
-        <div id="screen-result" class="screen">
-            <div class="result-header">
-                <span class="step-badge" id="resultBadge">맞춤 포만감 메뉴</span>
-                <h2 class="step-title" style="font-size: 20px;">내일 추천 아침 식단</h2>
-            </div>
-
-            <div class="result-card">
-                <span class="meal-tag" id="mealTag">고단백 / 식이섬유</span>
-                <div class="meal-icon" id="mealIcon">🥑</div>
-                <h3 class="meal-title" id="mealTitle">아보카도 에그 토스트</h3>
-                <p class="meal-desc" id="mealDesc">통밀빵 위에 으깬 아보카도와 계란 후라이를 얹어 고소하고 포만감이 오래 지속되는 메뉴입니다.</p>
-                
-                <div class="nutrition-list">
-                    <div class="nutrition-item">
-                        <span class="nutrition-label">포만감</span>
-                        <span class="nutrition-val" id="nutSatiety">★★★★★</span>
-                    </div>
-                    <div class="nutrition-item">
-                        <span class="nutrition-label">조리 시간</span>
-                        <span class="nutrition-val" id="nutTime">10분</span>
-                    </div>
-                    <div class="nutrition-item">
-                        <span class="nutrition-label">난이도</span>
-                        <span class="nutrition-val" id="nutDiff">쉬움</span>
-                    </div>
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">완료된 수행</span>
+                    <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs" id="completedCount">0</span>
+                </div>
+                <div class="mt-3">
+                    <div class="text-2xl font-bold text-slate-800" id="completedText">0개 완료</div>
+                    <p class="text-[11px] text-slate-500 mt-0.5">제출 및 마무리 완료된 평가</p>
                 </div>
             </div>
+        </section>
 
-            <div class="reason-box" id="reasonBox">
-                💡 💡 <strong>선정 이유:</strong> 점심까지 약 5시간이 남아 포만감을 오래 유지할 수 있는 단백질과 건강한 지방 조합으로 추천해 드려요.
-            </div>
-
-            <div class="btn-group">
-                <button class="btn-secondary" onclick="goToScreen('screen-time')">
-                    <i class="fa-solid fa-rotate-right"></i> 시간 다시 선택
+        <section class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-6 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-1.5 overflow-x-auto bg-slate-100/80 p-1 rounded-xl">
+                <button onclick="app.setFilter('pending')" id="filter-pending" class="filter-btn px-4 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-700 shadow-sm transition-all">
+                    진행 중
                 </button>
-                <button class="btn-primary" style="flex: 1.2;" onclick="reRollMeal()">
-                    <i class="fa-solid fa-shuffle"></i> 다른 메뉴 보기
+                <button onclick="app.setFilter('completed')" id="filter-completed" class="filter-btn px-4 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all">
+                    완료됨
+                </button>
+                <button onclick="app.setFilter('all')" id="filter-all" class="filter-btn px-4 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all">
+                    전체 보기
+                </button>
+            </div>
+            
+            <div class="relative w-full sm:w-64">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                <input type="text" id="searchInput" oninput="app.render()" placeholder="과목, 공부내용, 준비물 검색..." class="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+            </div>
+        </section>
+
+        <section>
+            <div id="assessmentList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Assessment cards rendered dynamically -->
+            </div>
+            
+            <div id="emptyState" class="hidden flex-col items-center justify-center py-16 text-center bg-white rounded-2xl border border-dashed border-slate-300 my-2">
+                <div class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mb-3 text-xl">
+                    <i class="fa-regular fa-calendar-check"></i>
+                </div>
+                <h3 class="text-sm font-bold text-slate-800 mb-1" id="emptyStateTitle">등록된 수행평가가 없습니다</h3>
+                <p class="text-xs text-slate-500 mb-5" id="emptyStateSub">새 수행평가를 등록하고 전날 오후 3시/7시 알림을 받아보세요!</p>
+                <button onclick="app.openModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-xl text-xs shadow-md transition-all">
+                    + 수행평가 일정 추가
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <div id="assessmentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl transform scale-95 transition-transform duration-200" id="modalContainer">
+            
+            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/50 rounded-t-2xl">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900">수행평가 일정 등록</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">여러 항목을 한 번에 입력해 일정을 스마트하게 관리하세요.</p>
+                </div>
+                <button onclick="app.closeModal()" class="text-slate-400 hover:text-slate-600 p-2 rounded-lg transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="px-6 py-4 overflow-y-auto space-y-5 custom-scrollbar flex-grow" id="formItemsContainer">
+                <!-- Form cards generated dynamically -->
+            </div>
+
+            <div class="px-6 py-4 border-t border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-b-2xl">
+                <button type="button" onclick="app.addFormItem()" class="w-full sm:w-auto px-4 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-plus text-indigo-600"></i>
+                    <span>+ 다른 수행평가 함께 추가하기</span>
+                </button>
+
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button type="button" onclick="app.closeModal()" class="flex-1 sm:flex-none px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition-all">
+                        취소
+                    </button>
+                    <button type="button" onclick="app.saveAssessments()" class="flex-1 sm:flex-none px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-600/20 transition-all flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-check"></i>
+                        <span>모두 저장하기</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notificationModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl animate-fade-in">
+            <div class="p-4 bg-slate-900 text-white flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-bell text-amber-400 text-sm"></i>
+                    <h3 class="font-bold text-xs">전날 알림 푸시 시뮬레이션</h3>
+                </div>
+                <button onclick="app.closeNotificationModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-5 bg-slate-100 space-y-4">
+                <p class="text-[11px] text-slate-500 text-center">수행평가 전날 오후 3시와 7시에 전송되는 실제 알림 문구입니다.</p>
+                
+                <div class="bg-white/95 backdrop-blur border border-slate-200 rounded-2xl p-4 shadow-sm relative">
+                    <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-5 h-5 bg-indigo-600 rounded-md text-white flex items-center justify-center text-[10px]"><i class="fa-solid fa-moon"></i></span>
+                            <span class="font-bold text-slate-800 text-[11px]">오늘밤 새?</span>
+                        </div>
+                        <span class="text-[10px]">전날 오후 3:00</span>
+                    </div>
+                    <div id="notif3PMContent" class="text-xs text-slate-800 space-y-1"></div>
+                </div>
+
+                <div class="bg-white/95 backdrop-blur border border-slate-200 rounded-2xl p-4 shadow-md border-l-4 border-l-indigo-600 relative">
+                    <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-5 h-5 bg-indigo-600 rounded-md text-white flex items-center justify-center text-[10px]"><i class="fa-solid fa-moon"></i></span>
+                            <span class="font-bold text-slate-800 text-[11px]">오늘밤 새?</span>
+                        </div>
+                        <span class="text-indigo-600 font-extrabold text-[10px]">전날 오후 7:00 (최종 시작 경고)</span>
+                    </div>
+                    <div id="notif7PMContent" class="text-xs text-slate-800 space-y-1"></div>
+                </div>
+            </div>
+
+            <div class="p-3.5 bg-white border-t border-slate-200 text-right">
+                <button onclick="app.closeNotificationModal()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition-all">
+                    확인
                 </button>
             </div>
         </div>
     </div>
 
+    <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl text-center space-y-4 animate-fade-in">
+            <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-trash-can"></i>
+            </div>
+            <div>
+                <h3 class="text-sm font-bold text-slate-800">정말 삭제하시겠습니까?</h3>
+                <p class="text-xs text-slate-500 mt-1" id="confirmMsg">선택한 수행평가 일정이 삭제됩니다.</p>
+            </div>
+            <div class="flex items-center gap-2 pt-2">
+                <button id="cancelConfirmBtn" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all">
+                    취소
+                </button>
+                <button id="okConfirmBtn" class="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-md transition-all">
+                    삭제하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 opacity-0 pointer-events-none transition-all duration-300">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toastMsg">처리되었습니다.</span>
+    </div>
+
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-400">
+        <p>© 2026 오늘밤 새? - 시험과 수행평가에 지친 학생들을 위한 스마트 관리 앱</p>
+    </footer>
+
     <script>
-        // Database of breakfast meals grouped by needed satiety duration
-        const mealsData = {
-            early: [ // Lunch early (11:00 ~ 11:30) - Light breakfasts
-                {
-                    title: "그릭 요거트 & 그래놀라 베리",
-                    icon: "🥣",
-                    tag: "가벼운 출발",
-                    desc: "꾸덕한 그릭 요거트에 바삭한 그래놀라와 블루베리를 더해 가볍고 빠르게 즐길 수 있는 식단입니다.",
-                    satiety: "★★★☆☆",
-                    time: "3분",
-                    diff: "매우 쉬움",
-                    reason: "이른 점심 식사가 예정되어 있어 가볍게 에너지를 채우고 부드럽게 소화될 수 있는 메뉴로 추천합니다."
-                },
-                {
-                    title: "사과 & 아몬드 버터 토스트",
-                    icon: "🍎",
-                    tag: "비타민 충전",
-                    desc: "바삭하게 구운 식빵 위에 아몬드 버터를 바르고 슬라이스한 사과를 얹어 상큼하게 즐기는 메뉴입니다.",
-                    satiety: "★★★☆☆",
-                    time: "5분",
-                    diff: "쉬움",
-                    reason: "점심시간이 빨라 소화 부담을 줄이면서도 사과의 식이섬유로 적당한 활력을 주는 메뉴입니다."
-                }
-            ],
-            standard: [ // Lunch standard (11:45 ~ 12:30) - Balanced breakfasts
-                {
-                    title: "아보카도 에그 토스트",
-                    icon: "🥑",
-                    tag: "고단백 & 지방",
-                    desc: "통밀빵 위에 으깬 아보카도와 달걀 후라이를 올려 든든함과 영양을 모두 잡은 완벽한 아침 메뉴입니다.",
-                    satiety: "★★★★☆",
-                    time: "8분",
-                    diff: "쉬움",
-                    reason: "표준 점심시간까지 약 4시간 동안 안정적인 혈당과 포만감을 유지해 줄 수 있는 균형 잡힌 식단입니다."
-                },
-                {
-                    title: "바나나 블루베리 오트밀",
-                    icon: "🥣",
-                    tag: "복합 탄수화물",
-                    desc: "따뜻한 우유나 두유에 오트밀을 끓이고, 바나나와 견과류를 올려 든든하게 먹는 건강식입니다.",
-                    satiety: "★★★★☆",
-                    time: "7분",
-                    diff: "쉬움",
-                    reason: "오트밀의 식이섬유가 천천히 소화되어 점심때까지 편안한 든든함을 제공해 드립니다."
-                }
-            ],
-            late: [ // Lunch late (12:45 ~ 13:30) - High satiety breakfasts
-                {
-                    title: "훈제연어 스크램블 에그 랩",
-                    icon: "🌯",
-                    tag: "고단백 든든식",
-                    desc: "통밀 또띠아에 포슬포슬한 스크램블 에그와 훈제연어, 야채를 넣어 감싸 먹는 고단백 롤입니다.",
-                    satiety: "★★★★★",
-                    time: "10분",
-                    diff: "보통",
-                    reason: "점심시간이 늦어 5시간 이상 배고픔을 견뎌야 하므로 단백질과 지방이 풍부한 메뉴를 추천합니다."
-                },
-                {
-                    title: "닭가슴살 고구마 샐러드 볼",
-                    icon: "🥗",
-                    tag: "고단백 & 식이섬유",
-                    desc: "촉촉한 닭가슴살과 찐 고구마, 삶은 계란, 견과류를 푸짐하게 담아낸 영양 가득 샐러드입니다.",
-                    satiety: "★★★★★",
-                    time: "10분",
-                    diff: "쉬움",
-                    reason: "고구마의 복합 탄수화물과 닭가슴살의 단백질이 오랫동안 허기짐 없이 유지해 줍니다."
-                }
-            ],
-            veryLate: [ // Lunch very late (13:45 ~ 15:00) - Ultimate long satiety
-                {
-                    title: "치즈 베이컨 오믈렛 & 통밀빵",
-                    icon: "🍳",
-                    tag: "울트라 포만감",
-                    desc: "계란 3개에 치즈, 베이컨, 버섯을 가득 넣은 촉촉한 오믈렛과 노릇하게 구운 통밀빵 세트입니다.",
-                    satiety: "★★★★★",
-                    time: "12분",
-                    diff: "보통",
-                    reason: "점심 식사가 매우 늦습니다! 6시간 이상 강력한 포만감을 지속시켜 주는 고단백 고영양 아침입니다."
-                },
-                {
-                    title: "소고기 야채 죽 & 계란말이",
-                    icon: "🍲",
-                    tag: "속편한 든든함",
-                    desc: "부드럽고 소화가 잘 되는 소고기 야채죽에 고소한 계란말이를 더해 속은 편안하면서도 오래 든든합니다.",
-                    satiety: "★★★★★",
-                    time: "10분",
-                    diff: "쉬움",
-                    reason: "늦은 점심까지 속 쓰림 없이 오랫동안 에너지 레벨을 높게 유지할 수 있도록 돕습니다."
-                }
-            ]
-        };
+        class AssessmentApp {
+            constructor() {
+                this.assessments = JSON.parse(localStorage.getItem('night_owl_assessments_v2')) || [];
+                this.currentFilter = 'pending';
+                this.formItemCounter = 0;
+                this.pendingDeleteId = null;
 
-        // Generating Scroller Times (11:00 ~ 15:00, 15 min steps)
-        const times = [];
-        let currentHour = 11;
-        let currentMin = 0;
-
-        while (currentHour < 15 || (currentHour === 15 && currentMin === 0)) {
-            const period = currentHour >= 12 ? "오후" : "오전";
-            const displayHour = currentHour > 12 ? currentHour - 12 : currentHour;
-            const minStr = currentMin === 0 ? "00" : currentMin;
-            const timeVal = `${currentHour}:${minStr}`;
-            const timeText = `${period} ${displayHour}:${minStr}`;
-            times.push({ val: timeVal, text: timeText, hour: currentHour, min: currentMin });
-
-            currentMin += 15;
-            if (currentMin >= 60) {
-                currentMin = 0;
-                currentHour++;
+                if (this.assessments.length === 0) {
+                    this.initSampleData();
+                }
             }
-        }
 
-        let selectedIndex = 4; // Default: 12:00 PM
-        let currentMealCategory = "standard";
-        let lastRandomIndex = -1;
-
-        // Init Scroller
-        document.addEventListener("DOMContentLoaded", () => {
-            const wheel = document.getElementById("timeWheel");
-            
-            times.forEach((t, idx) => {
-                const item = document.createElement("div");
-                item.className = `picker-item ${idx === selectedIndex ? 'selected' : ''}`;
-                item.innerText = t.text;
-                item.addEventListener("click", () => scrollToItem(idx));
-                wheel.appendChild(item);
-            });
-
-            // Handle Scroll End Detection
-            let scrollTimeout;
-            wheel.addEventListener("scroll", () => {
-                clearTimeout(scrollTimeout);
-                scrollTimeout = setTimeout(() => {
-                    const itemHeight = 40;
-                    const scrollTop = wheel.scrollTop;
-                    const calculatedIdx = Math.round(scrollTop / itemHeight);
-                    if (calculatedIdx !== selectedIndex && calculatedIdx >= 0 && calculatedIdx < times.length) {
-                        updateSelection(calculatedIdx);
+            init() {
+                this.render();
+                
+                document.getElementById('cancelConfirmBtn').onclick = () => this.closeConfirmModal();
+                document.getElementById('okConfirmBtn').onclick = () => {
+                    if (this.pendingDeleteId) {
+                        this.deleteAssessment(this.pendingDeleteId);
+                        this.closeConfirmModal();
                     }
-                }, 100);
-            });
+                };
+            }
 
-            // Initial alignment
-            setTimeout(() => {
-                wheel.scrollTop = selectedIndex * 40;
-                updateSelection(selectedIndex);
-            }, 100);
-        });
+            initSampleData() {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
-        function scrollToItem(idx) {
-            const wheel = document.getElementById("timeWheel");
-            wheel.scrollTo({
-                top: idx * 40,
-                behavior: 'smooth'
-            });
-            updateSelection(idx);
-        }
+                const dayAfter = new Date();
+                dayAfter.setDate(dayAfter.getDate() + 3);
+                const dayAfterStr = dayAfter.toISOString().split('T')[0];
 
-        function updateSelection(idx) {
-            selectedIndex = idx;
-            const items = document.querySelectorAll(".picker-item");
-            items.forEach((item, i) => {
-                if (i === idx) {
-                    item.classList.add("selected");
-                } else {
-                    item.classList.remove("selected");
+                this.assessments = [
+                    {
+                        id: 'demo-1',
+                        subject: '과학',
+                        style: '실험',
+                        customStyle: '',
+                        date: tomorrowStr,
+                        studyContent: '현미경 세포 관찰 결과 보고서 및 결론 정리',
+                        itemsNeeded: '실험 노트, 보고서 양식지, 삼색펜',
+                        difficulty: '상',
+                        completed: false,
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 'demo-2',
+                        subject: '국어',
+                        style: '서술형',
+                        customStyle: '',
+                        date: dayAfterStr,
+                        studyContent: '현대시 3편 표현상 특징 및 주제 암기하기',
+                        itemsNeeded: '검은색 수성펜, 수정테이프',
+                        difficulty: '중',
+                        completed: false,
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                this.saveToStorage();
+            }
+
+            saveToStorage() {
+                localStorage.setItem('night_owl_assessments_v2', JSON.stringify(this.assessments));
+            }
+
+            showToast(message, iconClass = 'fa-solid fa-circle-check text-emerald-400') {
+                const toast = document.getElementById('toast');
+                const toastMsg = document.getElementById('toastMsg');
+                const toastIcon = document.getElementById('toastIcon');
+
+                toastMsg.innerText = message;
+                toastIcon.className = iconClass;
+
+                toast.classList.remove('opacity-0', 'pointer-events-none');
+                toast.classList.add('opacity-100');
+
+                setTimeout(() => {
+                    toast.classList.remove('opacity-100');
+                    toast.classList.add('opacity-0', 'pointer-events-none');
+                }, 2600);
+            }
+
+            calculateStartTime(style, difficulty) {
+                let category = 'B';
+                if (['만들기', '조사', '실험'].includes(style)) {
+                    category = 'A';
+                } else if (['실기', '기타'].includes(style)) {
+                    category = 'C';
                 }
-            });
 
-            const selectedTime = times[idx];
-            document.getElementById("selectedTimeText").innerText = selectedTime.text;
+                if (category === 'A') {
+                    if (difficulty === '상') return { time: '오후 7:00', tip: '손이 많이 가는 작업이에요. 늦어도 [오늘 밤 7시 00분]엔 꼭 시작해라!' };
+                    if (difficulty === '중') return { time: '오후 8:00', tip: '차근차근 준비해야 해요. 늦어도 [오늘 밤 8시 00분]엔 꼭 시작해라!' };
+                    return { time: '오후 9:00', tip: '비교적 가벼운 준비 작업! 늦어도 [오늘 밤 9시 00분]엔 꼭 시작해라!' };
+                } else if (category === 'B') {
+                    if (difficulty === '상') return { time: '오후 8:00', tip: '벼락치기 힘든 과목이에요. 늦어도 [오늘 밤 8시 00분]엔 꼭 시작해라!' };
+                    if (difficulty === '중') return { time: '오후 8:30', tip: '핵심 내용 위주 복습! 늦어도 [오늘 밤 8시 30분]엔 꼭 시작해라!' };
+                    return { time: '오후 9:30', tip: '가볍게 요약본 훑어보기! 늦어도 [오늘 밤 9시 30분]엔 꼭 시작해라!' };
+                } else {
+                    if (difficulty === '상') return { time: '오후 8:30', tip: '연습이 꽤 필요해요. 늦어도 [오늘 밤 8시 30분]엔 꼭 시작해라!' };
+                    if (difficulty === '중') return { time: '오후 9:00', tip: '실전처럼 점검하기! 늦어도 [오늘 밤 9시 00분]엔 꼭 시작해라!' };
+                    return { time: '오후 10:00', tip: '마지막으로 점검하고 자자! 늦어도 [오늘 밤 10시 00분]엔 꼭 시작해라!' };
+                }
+            }
 
-            // Satiety Description update based on time
-            const satietyEl = document.getElementById("satietyInfo");
-            const h = selectedTime.hour;
-            const m = selectedTime.min;
+            calculateDDay(dateStr) {
+                if (!dateStr) return { text: 'D-Day 미정', badgeClass: 'bg-slate-100 text-slate-600' };
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const target = new Date(dateStr);
+                target.setHours(0, 0, 0, 0);
+                
+                const diffTime = target - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-            if (h === 11) {
-                satietyEl.innerText = "아침 후 점심까지 약 3시간 (가볍고 알찬 식단)";
-                currentMealCategory = "early";
-            } else if (h === 12 && m <= 30) {
-                satietyEl.innerText = "아침 후 점심까지 약 4~5시간 (탄탄한 포만감 필요)";
-                currentMealCategory = "standard";
-            } else if (h === 12 && m > 30 || h === 13 && m <= 30) {
-                satietyEl.innerText = "아침 후 점심까지 약 5~6시간 (높은 포만감 필수)";
-                currentMealCategory = "late";
-            } else {
-                satietyEl.innerText = "아침 후 점심까지 6시간 이상 (최상급 포만감 필요!)";
-                currentMealCategory = "veryLate";
+                if (diffDays === 0) return { text: 'D-DAY (오늘)', badgeClass: 'bg-rose-500 text-white font-bold animate-pulse' };
+                if (diffDays === 1) return { text: 'D-1 (내일)', badgeClass: 'bg-amber-500 text-white font-bold' };
+                if (diffDays > 1) return { text: `D-${diffDays}`, badgeClass: 'bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200' };
+                return { text: `종료 (D+${Math.abs(diffDays)})`, badgeClass: 'bg-slate-200 text-slate-500' };
+            }
+
+            setFilter(filter) {
+                this.currentFilter = filter;
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.className = 'filter-btn px-4 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all';
+                });
+                
+                const activeBtn = document.getElementById(`filter-${filter}`);
+                if (activeBtn) {
+                    activeBtn.className = 'filter-btn px-4 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-700 shadow-sm transition-all';
+                }
+
+                this.render();
+            }
+
+            toggleComplete(id) {
+                const item = this.assessments.find(a => a.id === id);
+                if (item) {
+                    item.completed = !item.completed;
+                    this.saveToStorage();
+                    this.render();
+
+                    if (item.completed && this.currentFilter === 'pending') {
+                        this.showToast(`'${item.subject}' 수행평가를 완료하여 진행 중 목록에서 숨겼습니다!`);
+                    } else if (item.completed) {
+                        this.showToast(`'${item.subject}' 수행평가를 완료로 표시했습니다.`);
+                    } else {
+                        this.showToast(`'${item.subject}' 수행평가를 다시 진행 중으로 복원했습니다.`, 'fa-solid fa-rotate-left text-indigo-400');
+                    }
+                }
+            }
+
+            openConfirmModal(id) {
+                const item = this.assessments.find(a => a.id === id);
+                if (item) {
+                    this.pendingDeleteId = id;
+                    document.getElementById('confirmMsg').innerText = `'${item.subject}' 수행평가 일정을 정말 삭제하시겠습니까?`;
+                    document.getElementById('confirmModal').classList.remove('hidden');
+                }
+            }
+
+            closeConfirmModal() {
+                this.pendingDeleteId = null;
+                document.getElementById('confirmModal').classList.add('hidden');
+            }
+
+            deleteAssessment(id) {
+                this.assessments = this.assessments.filter(a => a.id !== id);
+                this.saveToStorage();
+                this.render();
+                this.showToast('수행평가가 삭제되었습니다.', 'fa-solid fa-trash-can text-rose-400');
+            }
+
+            openNotificationModal(id) {
+                const item = this.assessments.find(a => a.id === id);
+                if (!item) return;
+
+                const calc = this.calculateStartTime(item.style === '기타' ? item.customStyle || '기타' : item.style, item.difficulty);
+
+                document.getElementById('notif3PMContent').innerHTML = `
+                    <p class="font-bold">🚨 내일은 <span class="text-indigo-600">[${item.subject}]</span> 수행평가 날!</p>
+                    <p class="text-[11px] text-slate-600">* <b>스타일:</b> ${item.style === '기타' ? item.customStyle : item.style}</p>
+                    <p class="text-[11px] text-slate-600">* <b>공부할 것:</b> ${item.studyContent || '미입력'}</p>
+                    <p class="text-[11px] text-slate-600">* <b>준비물:</b> ${item.itemsNeeded || '없음'}</p>
+                `;
+
+                document.getElementById('notif7PMContent').innerHTML = `
+                    <p class="font-bold">⏰ 잊지 마세요! <span class="text-indigo-600">[${item.subject}]</span> 수행 시작 시간!</p>
+                    <p class="text-[11px] font-semibold text-indigo-700 mt-1">
+                        ${calc.tip}
+                    </p>
+                `;
+
+                document.getElementById('notificationModal').classList.remove('hidden');
+            }
+
+            closeNotificationModal() {
+                document.getElementById('notificationModal').classList.add('hidden');
+            }
+
+            openModal() {
+                const modal = document.getElementById('assessmentModal');
+                const modalContainer = document.getElementById('modalContainer');
+                const container = document.getElementById('formItemsContainer');
+                
+                container.innerHTML = '';
+                this.formItemCounter = 0;
+                
+                this.addFormItem();
+
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modalContainer.classList.remove('scale-95');
+                }, 10);
+            }
+
+            closeModal() {
+                const modal = document.getElementById('assessmentModal');
+                const modalContainer = document.getElementById('modalContainer');
+                
+                modal.classList.add('opacity-0');
+                modalContainer.classList.add('scale-95');
+                
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 200);
+            }
+
+            addFormItem() {
+                this.formItemCounter++;
+                const itemId = `form-item-${this.formItemCounter}`;
+                const container = document.getElementById('formItemsContainer');
+
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const defaultDate = tomorrow.toISOString().split('T')[0];
+
+                const itemHTML = `
+                    <div id="${itemId}" class="p-4 bg-slate-50 border border-slate-200 rounded-xl relative space-y-3.5">
+                        <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                            <div class="font-bold text-xs text-indigo-600 flex items-center gap-1.5">
+                                <i class="fa-solid fa-pen-to-square"></i> 수행평가 #${this.formItemCounter}
+                            </div>
+                            ${this.formItemCounter > 1 ? `
+                                <button type="button" onclick="app.removeFormItem('${itemId}')" class="text-slate-400 hover:text-rose-500 text-xs flex items-center gap-1 font-semibold transition-colors">
+                                    <i class="fa-solid fa-trash-can"></i> 삭제
+                                </button>
+                            ` : ''}
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">과목 / 수행평가명 *</label>
+                            <input type="text" data-field="subject" placeholder="예: 국어 서평 쓰기, 과학 세포관찰" required class="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">수행 스타일 *</label>
+                                <select data-field="style" onchange="app.handleStyleChange(this)" class="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                    <option value="서술형">서술형</option>
+                                    <option value="만들기">만들기</option>
+                                    <option value="일반 시험">일반 시험</option>
+                                    <option value="조사">조사</option>
+                                    <option value="실기">실기</option>
+                                    <option value="실험">실험</option>
+                                    <option value="기타">기타 (직접 입력)</option>
+                                </select>
+                            </div>
+
+                            <div data-container="customStyle" class="hidden">
+                                <label class="block text-xs font-bold text-slate-700 mb-1">기타 스타일 입력 *</label>
+                                <input type="text" data-field="customStyle" placeholder="스타일 직접 입력" class="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">언제 보나요? *</label>
+                                <input type="date" data-field="date" value="${defaultDate}" required class="w-full px-2.5 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">공부 / 준비해야 할 것</label>
+                            <textarea data-field="studyContent" rows="2" placeholder="예: 교과서 p.45~60 핵심 단어 암기 및 질문지 작성" class="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none"></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">필요한 준비물</label>
+                                <input type="text" data-field="itemsNeeded" placeholder="예: 검은색 수성펜, 수정테이프, 색연필" class="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">예상 난이도 *</label>
+                                <select data-field="difficulty" class="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                    <option value="상">상 (준비 많이 필요)</option>
+                                    <option value="중" selected>중 (보통 소요)</option>
+                                    <option value="하">하 (가볍게 점검)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                container.insertAdjacentHTML('beforeend', itemHTML);
+            }
+
+            removeFormItem(itemId) {
+                const item = document.getElementById(itemId);
+                if (item) item.remove();
+            }
+
+            handleStyleChange(selectEl) {
+                const card = selectEl.closest('.p-4');
+                const customContainer = card.querySelector('[data-container="customStyle"]');
+                if (selectEl.value === '기타') {
+                    customContainer.classList.remove('hidden');
+                } else {
+                    customContainer.classList.add('hidden');
+                }
+            }
+
+            saveAssessments() {
+                const formItems = document.querySelectorAll('#formItemsContainer > div');
+                const newAssessments = [];
+
+                for (let card of formItems) {
+                    const subject = card.querySelector('[data-field="subject"]').value.trim();
+                    const style = card.querySelector('[data-field="style"]').value;
+                    const customStyle = card.querySelector('[data-field="customStyle"]').value.trim();
+                    const date = card.querySelector('[data-field="date"]').value;
+                    const studyContent = card.querySelector('[data-field="studyContent"]').value.trim();
+                    const itemsNeeded = card.querySelector('[data-field="itemsNeeded"]').value.trim();
+                    const difficulty = card.querySelector('[data-field="difficulty"]').value;
+
+                    if (!subject || !date) {
+                        this.showToast('과목/수행평가명과 일시를 모두 입력해주세요.', 'fa-solid fa-triangle-exclamation text-amber-400');
+                        return;
+                    }
+
+                    if (style === '기타' && !customStyle) {
+                        this.showToast('기타 스타일명을 입력해주세요.', 'fa-solid fa-triangle-exclamation text-amber-400');
+                        return;
+                    }
+
+                    newAssessments.push({
+                        id: 'item-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+                        subject,
+                        style,
+                        customStyle,
+                        date,
+                        studyContent,
+                        itemsNeeded,
+                        difficulty,
+                        completed: false,
+                        createdAt: new Date().toISOString()
+                    });
+                }
+
+                this.assessments = [...newAssessments, ...this.assessments];
+                this.saveToStorage();
+                this.closeModal();
+                this.render();
+                this.showToast(`${newAssessments.length}개의 수행평가가 추가되었습니다!`);
+            }
+
+            render() {
+                const container = document.getElementById('assessmentList');
+                const emptyState = document.getElementById('emptyState');
+                const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+
+                const pendingItems = this.assessments.filter(a => !a.completed);
+                const completedItems = this.assessments.filter(a => a.completed);
+
+                document.getElementById('activeCount').innerText = pendingItems.length;
+                document.getElementById('completedCount').innerText = completedItems.length;
+                document.getElementById('totalTasksText').innerText = `${pendingItems.length}개 항목`;
+                document.getElementById('completedText').innerText = `${completedItems.length}개 완료`;
+
+                if (pendingItems.length > 0) {
+                    const sortedPending = [...pendingItems].sort((a, b) => new Date(a.date) - new Date(b.date));
+                    const nearest = sortedPending[0];
+                    const ddayInfo = this.calculateDDay(nearest.date);
+                    document.getElementById('urgentDDay').innerText = ddayInfo.text;
+                    document.getElementById('urgentTitle').innerText = `${nearest.subject} (${nearest.style === '기타' ? nearest.customStyle : nearest.style})`;
+                } else {
+                    document.getElementById('urgentDDay').innerText = 'D-Day';
+                    document.getElementById('urgentTitle').innerText = '남은 수행평가가 없습니다';
+                }
+
+                let filtered = this.assessments;
+                if (this.currentFilter === 'pending') {
+                    filtered = pendingItems;
+                } else if (this.currentFilter === 'completed') {
+                    filtered = completedItems;
+                }
+
+                if (searchVal) {
+                    filtered = filtered.filter(a => 
+                        a.subject.toLowerCase().includes(searchVal) ||
+                        (a.studyContent && a.studyContent.toLowerCase().includes(searchVal)) ||
+                        (a.itemsNeeded && a.itemsNeeded.toLowerCase().includes(searchVal)) ||
+                        a.style.toLowerCase().includes(searchVal)
+                    );
+                }
+
+                filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                container.innerHTML = '';
+
+                if (filtered.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    emptyState.classList.add('flex');
+
+                    const titleEl = document.getElementById('emptyStateTitle');
+                    const subEl = document.getElementById('emptyStateSub');
+
+                    if (this.currentFilter === 'pending') {
+                        titleEl.innerText = '진행 중인 수행평가가 없습니다!';
+                        subEl.innerText = '모든 수행평가를 마쳤거나 새로운 일정을 추가하세요.';
+                    } else if (this.currentFilter === 'completed') {
+                        titleEl.innerText = '완료된 수행평가가 없습니다';
+                        subEl.innerText = '과제를 체크 완료하면 이 영역에서 보관 관리됩니다.';
+                    } else {
+                        titleEl.innerText = '검색 결과가 없습니다';
+                        subEl.innerText = '검색어를 변경하거나 수행 일정을 등록하세요.';
+                    }
+                    return;
+                } else {
+                    emptyState.classList.add('hidden');
+                    emptyState.classList.remove('flex');
+                }
+
+                filtered.forEach(item => {
+                    const dday = this.calculateDDay(item.date);
+                    const displayStyle = item.style === '기타' ? item.customStyle || '기타' : item.style;
+                    const calc = this.calculateStartTime(displayStyle, item.difficulty);
+
+                    const card = document.createElement('div');
+                    card.className = `bg-white border rounded-2xl p-4.5 shadow-sm transition-all relative flex flex-col justify-between ${
+                        item.completed ? 'border-slate-200 bg-slate-50/70 opacity-60' : 'border-slate-200 hover:border-indigo-300 hover:shadow'
+                    }`;
+
+                    const diffBadge = item.difficulty === '상' 
+                        ? 'bg-rose-50 text-rose-600 border-rose-200'
+                        : item.difficulty === '중'
+                        ? 'bg-amber-50 text-amber-600 border-amber-200'
+                        : 'bg-emerald-50 text-emerald-600 border-emerald-200';
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-start justify-between gap-2 mb-2.5">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="text-[11px] px-2 py-0.5 rounded-md ${dday.badgeClass}">${dday.text}</span>
+                                    <span class="text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-md">${item.subject}</span>
+                                    <span class="text-xs text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">스타일: ${displayStyle}</span>
+                                    <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md border ${diffBadge}">난이도 ${item.difficulty}</span>
+                                </div>
+
+                                <button onclick="app.openConfirmModal('${item.id}')" class="text-slate-300 hover:text-rose-500 p-1 text-xs transition-colors">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+
+                            <div class="space-y-1.5 my-3 text-xs text-slate-600 bg-slate-50/80 p-3 rounded-xl border border-slate-100">
+                                <div><span class="font-bold text-slate-700">공부 내용:</span> ${item.studyContent || '미입력'}</div>
+                                <div><span class="font-bold text-slate-700">준비물:</span> ${item.itemsNeeded || '없음'}</div>
+                                <div class="text-slate-400 text-[11px] pt-0.5">🗓️ 수행일: ${item.date}</div>
+                            </div>
+
+                            <div class="bg-indigo-50/80 border border-indigo-100 rounded-xl p-2.5 text-xs text-indigo-900 flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fa-regular fa-bell text-indigo-600 text-sm"></i>
+                                    <span class="font-medium">${calc.tip}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                            <label class="flex items-center gap-2 cursor-pointer select-none">
+                                <input type="checkbox" ${item.completed ? 'checked' : ''} onchange="app.toggleComplete('${item.id}')" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer">
+                                <span class="${item.completed ? 'line-through text-slate-400' : 'text-slate-700 font-semibold'}">
+                                    ${item.completed ? '수행 완료됨' : '완료로 표시'}
+                                </span>
+                            </label>
+
+                            <button onclick="app.openNotificationModal('${item.id}')" class="text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1 px-2 py-1 rounded hover:bg-indigo-50 transition-colors">
+                                <i class="fa-solid fa-mobile-screen-button"></i> 알림 미리보기
+                            </button>
+                        </div>
+                    `;
+
+                    container.appendChild(card);
+                });
             }
         }
 
-        function goToScreen(screenId) {
-            const screens = document.querySelectorAll('.screen');
-            screens.forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        function calculateAndShowResult() {
-            goToScreen('screen-loading');
-            
-            const loadingTexts = [
-                "내일 점심시간 계산 중...",
-                "필요한 포만감 지수 분석 중...",
-                "최적의 영양 밸런스 메뉴 찾는 중..."
-            ];
-            
-            let textIdx = 0;
-            const interval = setInterval(() => {
-                textIdx = (textIdx + 1) % loadingTexts.length;
-                document.getElementById('loadingText').innerText = loadingTexts[textIdx];
-            }, 500);
-
-            setTimeout(() => {
-                clearInterval(interval);
-                renderMealResult();
-                goToScreen('screen-result');
-            }, 1500);
-        }
-
-        function renderMealResult() {
-            const categoryMeals = mealsData[currentMealCategory];
-            let randomIndex = Math.floor(Math.random() * categoryMeals.length);
-            
-            // Ensure different menu on retry if possible
-            if (randomIndex === lastRandomIndex && categoryMeals.length > 1) {
-                randomIndex = (randomIndex + 1) % categoryMeals.length;
-            }
-            lastRandomIndex = randomIndex;
-
-            const meal = categoryMeals[randomIndex];
-
-            document.getElementById('mealIcon').innerText = meal.icon;
-            document.getElementById('mealTitle').innerText = meal.title;
-            document.getElementById('mealTag').innerText = meal.tag;
-            document.getElementById('mealDesc').innerText = meal.desc;
-            document.getElementById('nutSatiety').innerText = meal.satiety;
-            document.getElementById('nutTime').innerText = meal.time;
-            document.getElementById('nutDiff').innerText = meal.diff;
-            document.getElementById('reasonBox').innerHTML = `💡 <strong>선정 이유:</strong> ${meal.reason}`;
-            
-            const timeText = times[selectedIndex].text;
-            document.getElementById('resultBadge').innerText = `예상 점심 [${timeText}] 맞춤 식단`;
-        }
-
-        function reRollMeal() {
-            const card = document.querySelector('.result-card');
-            card.style.opacity = '0.5';
-            card.style.transform = 'scale(0.98)';
-            
-            setTimeout(() => {
-                renderMealResult();
-                card.style.opacity = '1';
-                card.style.transform = 'scale(1)';
-            }, 200);
-        }
+        let app;
+        document.addEventListener('DOMContentLoaded', () => {
+            app = new AssessmentApp();
+            app.init();
+        });
     </script>
 </body>
 </html>
